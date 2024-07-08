@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Check if /etc/os-release exists and source it
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    echo "Operating System: $NAME"
+    echo "Version: $VERSION"
+    exit 0
+fi
+
+# Check if lsb_release command exists and use it
+if command -v lsb_release &> /dev/null; then
+    OS=$(lsb_release -si)
+    VERSION=$(lsb_release -sr)
+    echo "Operating System: $OS"
+    echo "Version: $VERSION"
+    exit 0
+fi
+
+# Check other common files for version info
+if [ -f /etc/lsb-release ]; then
+    . /etc/lsb-release
+    echo "Operating System: $DISTRIB_ID"
+    echo "Version: $DISTRIB_RELEASE"
+    exit 0
+fi
+
+if [ -f /etc/debian_version ]; then
+    echo "Operating System: Debian"
+    echo "Version: $(cat /etc/debian_version)"
+    exit 0
+fi
+
+if [ -f /etc/redhat-release ]; then
+    echo "Operating System: Red Hat"
+    echo "Version: $(cat /etc/redhat-release)"
+    exit 0
+fi
+
+echo "Unable to determine Linux version"
+exit 1
